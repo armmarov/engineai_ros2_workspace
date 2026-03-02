@@ -8,7 +8,7 @@ ROS_SOURCE := source /opt/ros/humble/setup.bash && source /workspace/install/set
 build-image:
 	docker compose build
 
-start:
+start: xhost
 	docker compose up -d
 
 stop:
