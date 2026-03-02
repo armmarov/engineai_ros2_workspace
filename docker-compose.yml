@@ -1,0 +1,20 @@
+services:
+  engineai-ros2:
+    build: .
+    image: engineai-ros2-humble
+    container_name: engineai_ros2
+    stdin_open: true
+    tty: true
+    network_mode: host
+    environment:
+      - DISPLAY=${DISPLAY}
+      - ROS_DOMAIN_ID=69
+      - ROS_LOCALHOST_ONLY=0
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    volumes:
+      # Mount workspace source into container
+      - .:/workspace
+      # Mount X11 socket for MuJoCo GUI visualization
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    devices:
+      - /dev/dri:/dev/dri
