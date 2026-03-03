@@ -1,0 +1,5 @@
+# Stop patrol and return home
+bool return_home
+---
+bool success
+string message

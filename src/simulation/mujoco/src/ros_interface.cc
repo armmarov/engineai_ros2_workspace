@@ -8,6 +8,7 @@
 #include <string>
 
 #include "config_loader.h"
+#include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 // Constants
@@ -31,6 +32,10 @@ bool RosInterface::Initialize() {
   
   // Create publisher for motion state
   motion_state_pub_ = node_->create_publisher<interface_protocol::msg::MotionState>("/motion/motion_state", 10);
+
+  // Create odometry publisher and TF broadcaster
+  odom_pub_ = node_->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
+  tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(node_);
 
   // Create subscriber with more compatible QoS settings
   using std::placeholders::_1;
@@ -151,6 +156,49 @@ void RosInterface::UpdateSimState(const mjModel* m, mjData* d) {
   imu_msg->angular_velocity.x = d->sensordata[index + 0];
   imu_msg->angular_velocity.y = d->sensordata[index + 1];
   imu_msg->angular_velocity.z = d->sensordata[index + 2];
+
+  // Publish odometry from ground truth body pose (floating base)
+  if (is_floating_base_) {
+    auto odom_msg = std::make_unique<nav_msgs::msg::Odometry>();
+    odom_msg->header.stamp = node_->now();
+    odom_msg->header.frame_id = "odom";
+    odom_msg->child_frame_id = "base_link";
+
+    // Position from floating base: qpos[0..2] = xyz
+    odom_msg->pose.pose.position.x = d->qpos[0];
+    odom_msg->pose.pose.position.y = d->qpos[1];
+    odom_msg->pose.pose.position.z = d->qpos[2];
+
+    // Orientation from floating base: qpos[3..6] = quaternion (w,x,y,z)
+    odom_msg->pose.pose.orientation.w = d->qpos[3];
+    odom_msg->pose.pose.orientation.x = d->qpos[4];
+    odom_msg->pose.pose.orientation.y = d->qpos[5];
+    odom_msg->pose.pose.orientation.z = d->qpos[6];
+
+    // Velocity from floating base: qvel[0..2] = linear vel, qvel[3..5] = angular vel
+    odom_msg->twist.twist.linear.x = d->qvel[0];
+    odom_msg->twist.twist.linear.y = d->qvel[1];
+    odom_msg->twist.twist.linear.z = d->qvel[2];
+    odom_msg->twist.twist.angular.x = d->qvel[3];
+    odom_msg->twist.twist.angular.y = d->qvel[4];
+    odom_msg->twist.twist.angular.z = d->qvel[5];
+
+    odom_pub_->publish(std::move(odom_msg));
+
+    // Broadcast TF: odom -> base_link
+    geometry_msgs::msg::TransformStamped tf_msg;
+    tf_msg.header.stamp = node_->now();
+    tf_msg.header.frame_id = "odom";
+    tf_msg.child_frame_id = "base_link";
+    tf_msg.transform.translation.x = d->qpos[0];
+    tf_msg.transform.translation.y = d->qpos[1];
+    tf_msg.transform.translation.z = d->qpos[2];
+    tf_msg.transform.rotation.w = d->qpos[3];
+    tf_msg.transform.rotation.x = d->qpos[4];
+    tf_msg.transform.rotation.y = d->qpos[5];
+    tf_msg.transform.rotation.z = d->qpos[6];
+    tf_broadcaster_->sendTransform(tf_msg);
+  }
 
   // Publish messages
   joint_state_pub_->publish(std::move(joint_state_msg));

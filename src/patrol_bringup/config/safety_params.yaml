@@ -1,0 +1,11 @@
+safety:
+  max_linear_speed: 0.5
+  max_angular_speed: 0.6
+  crowded_mode_speed: 0.3
+  min_obstacle_distance: 0.8
+  cmd_vel_timeout_ms: 200
+  blocked_prompt_timeout_sec: 10
+  blocked_alert_timeout_sec: 30
+battery:
+  total_runtime_minutes: 120
+  return_home_threshold_pct: 25

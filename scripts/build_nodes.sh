@@ -24,6 +24,17 @@ SIM_NODES=(
     "interface_protocol"
     "interface_example"
 )
+
+# Patrol nodes (sim + navigation + patrol stack)
+PATROL_NODES=(
+    "interface_protocol"
+    "patrol_interfaces"
+    "mujoco_simulator"
+    "interface_example"
+    "cmd_vel_bridge"
+    "patrol_bringup"
+)
+
 # Default target host is example
 TARGET_HOST="example"
 
@@ -36,9 +47,9 @@ if [[ -n "$1" ]]; then
 fi
 
 # Validate target host
-if [[ "$TARGET_HOST" != "example" && "$TARGET_HOST" != "app" && "$TARGET_HOST" != "sim" ]]; then
+if [[ "$TARGET_HOST" != "example" && "$TARGET_HOST" != "app" && "$TARGET_HOST" != "sim" && "$TARGET_HOST" != "patrol" ]]; then
     echo "Error: Invalid target host '$TARGET_HOST'"
-    echo "Available hosts: example, app, sim"
+    echo "Available hosts: example, app, sim, patrol"
     exit 1
 fi
 
@@ -52,6 +63,9 @@ elif [[ "$TARGET_HOST" == "app" ]]; then
 elif [[ "$TARGET_HOST" == "sim" ]]; then
     NODES=("${SIM_NODES[@]}")
     echo "Building for simulation nodes"
+elif [[ "$TARGET_HOST" == "patrol" ]]; then
+    NODES=("${PATROL_NODES[@]}")
+    echo "Building for patrol nodes"
 fi
 
 echo "Build type: $BUILD_TYPE"

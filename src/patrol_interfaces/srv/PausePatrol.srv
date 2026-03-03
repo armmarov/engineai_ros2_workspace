@@ -1,0 +1,5 @@
+# Pause or resume patrol
+bool pause    # true = pause, false = resume
+---
+bool success
+string message

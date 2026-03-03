@@ -1,0 +1,7 @@
+route:
+  name: "lobby_route_a"
+  loop: true
+  waypoints:
+    - {name: "entrance_door", x: 5.0, y: 0.0, theta: 0.0, is_poi: true, dwell_time_sec: 15, tts_phrase: "patrol_entrance", head_scan: true}
+    - {name: "lift_bank", x: 10.0, y: 3.0, theta: 1.57, is_poi: true, dwell_time_sec: 20, tts_phrase: "patrol_lift", head_scan: true}
+    - {name: "corridor_end", x: 15.0, y: 0.0, theta: 3.14, is_poi: false, dwell_time_sec: 0}

@@ -1,0 +1,6 @@
+# Start a patrol route
+string route_name
+uint32 num_loops    # 0 = infinite
+---
+bool success
+string message

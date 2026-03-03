@@ -28,6 +28,21 @@ RUN apt update && apt install -y \
     ros-humble-rmw-cyclonedds-cpp \
     && rm -rf /var/lib/apt/lists/*
 
+# Nav2 + perception dependencies for patrol system
+RUN apt update && apt install -y \
+    ros-humble-navigation2 \
+    ros-humble-nav2-bringup \
+    ros-humble-slam-toolbox \
+    ros-humble-robot-state-publisher \
+    ros-humble-tf2-ros \
+    ros-humble-tf2-geometry-msgs \
+    ros-humble-nav-msgs \
+    ros-humble-realsense2-camera \
+    ros-humble-depthimage-to-laserscan \
+    ros-humble-cv-bridge \
+    ros-humble-rosbridge-suite \
+    && rm -rf /var/lib/apt/lists/*
+
 # Extract third-party libs (MNN, MuJoCo, Eigen, yaml-cpp, etc.)
 # engineai_robotics_third_party_libs.tar.gz is already in the repo
 COPY src/third_party/engineai_robotics_third_party_libs.tar.gz /tmp/

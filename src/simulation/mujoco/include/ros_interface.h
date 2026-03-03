@@ -11,6 +11,8 @@
 #include "interface_protocol/msg/joint_command.hpp"
 #include "interface_protocol/msg/joint_state.hpp"
 #include "interface_protocol/msg/motion_state.hpp"
+#include "nav_msgs/msg/odometry.hpp"
+#include "tf2_ros/transform_broadcaster.h"
 #include "rclcpp/rclcpp.hpp"
 
 // MuJoCo includes
@@ -55,6 +57,10 @@ class RosInterface {
   rclcpp::Publisher<interface_protocol::msg::JointState>::SharedPtr joint_state_pub_;
   rclcpp::Publisher<interface_protocol::msg::ImuInfo>::SharedPtr imu_pub_;
   rclcpp::Publisher<interface_protocol::msg::MotionState>::SharedPtr motion_state_pub_;
+  rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
+
+  // TF broadcaster
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
   // Subscribers
   rclcpp::Subscription<interface_protocol::msg::JointCommand>::SharedPtr joint_cmd_sub_;

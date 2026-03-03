@@ -29,6 +29,11 @@ build:
 		rm -rf build/mujoco_simulator build/interface_example install/mujoco_simulator install/interface_example && \
 		./scripts/build_nodes.sh sim"
 
+build-patrol:
+	docker exec $(CONTAINER) bash -c \
+		"source /opt/ros/humble/setup.bash && cd /workspace && \
+		./scripts/build_nodes.sh patrol"
+
 # ─────────────────────────────────────────────
 #  Run nodes (run each in a separate terminal)
 # ─────────────────────────────────────────────
@@ -41,6 +46,12 @@ run-sim:
 
 run-patrol:
 	docker exec -it $(CONTAINER) bash -c "$(ROS_SOURCE) && python3 /workspace/src/interface_example/scripts/patrol_rectangle.py"
+
+run-patrol-sim:
+	docker exec -it $(CONTAINER) bash -c "$(ROS_SOURCE) && ros2 launch patrol_bringup patrol_sim.launch.py"
+
+run-cmd-vel-bridge:
+	docker exec -it $(CONTAINER) bash -c "$(ROS_SOURCE) && ros2 launch patrol_bringup cmd_vel_test.launch.py"
 
 # ─────────────────────────────────────────────
 #  Utilities
@@ -71,6 +82,6 @@ setup: build-image start build
 	@echo "Terminal 2: make run-sim"
 	@echo "Terminal 3: make run-patrol (optional)"
 
-.PHONY: build-image start stop restart shell build \
-        run-controller run-sim run-patrol \
+.PHONY: build-image start stop restart shell build build-patrol \
+        run-controller run-sim run-patrol run-patrol-sim run-cmd-vel-bridge \
         xhost monitor topics hz logs setup
